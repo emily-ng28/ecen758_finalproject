@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CNN vs. ResNet18 on STL-10: Deep Learning Image Classification on STL-10</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 30px 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.7;
+            color: #222;
+            max-width: 860px;
+            margin-left: auto;
+            margin-right: auto;
+            background: #fff;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 34px;
+            font-weight: 600;
+            margin-top: 0px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 26px;
+            font-weight: 600;
+            margin-top: 55px;
+            margin-bottom: 18px;
+        }
+
+        h3 {
+            font-size: 21px;
+            font-weight: 600;
+            margin-top: 40px;
+            margin-bottom: 14px;
+        }
+
+        h4 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 28px;
+            margin-bottom: 10px;
+        }
+
+        .authors {
+            text-align: center;
+            margin-bottom: 35px;
+            font-size: 16px;
+            font-weight: 300;
+        }
+
+        p {
+            text-align: justify;
+            font-size: 16px;
+            margin-bottom: 18px;
+        }
+
+        a {
+            color: #0057b8;
+            text-decoration: none;
+        }
+        a:hover { text-decoration: underline; }
+
+        /* Figures */
+        .figure {
+            margin: 35px auto;
+            text-align: center;
+            max-width: 700px;
+        }
+
+        .figure img {
+            width: 100%;
+            border-radius: 4px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .caption {
+            font-size: 14px;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 28px 0;
+            font-size: 15px;
+        }
+
+        th, td {
+            padding: 8px 6px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        thead tr {
+            border-bottom: 2px solid #444;
+        }
+
+        /* Materials images */
+        .materials-img {
+            height: 120px;
+            width: 300px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>CNN vs. ResNet18: Deep Learning Image Classification on STL-10</h1>
+
+<div class="authors">
+    Jack Gauderman · Abel Mendoza · Emily Nguyen · Samuel Wade
+</div>
+
+<h2>Abstract</h2>
+<p>
+This project aims to evaluate convolutional neural networks (CNN) specifically targeted to multi-class image classification purposes utilizing STL-10 datasets. The STL-10 contains 10 different classes consisting of images ranging from 500 to 800 test images for each class at 96×96 resolution. We executed a convolutional neural network (CNN) using PyTorch, incorporating data augmentation, hyperparameter tuning, and adherence to comprehensive evaluation metrics. In addition to the CNN, we fine-tuned and evaluated a pretrained ResNet18 model to compare CNN’s architecture to a deeper model. Experimental results show that CNN achieves good performance, the ResNet18 model improves classification accuracy over complex classes. 
+</p>
+
+<h2>Introduction</h2>
+<p>
+The STL-10 dataset represents a difficult challenge that deals with higher resolution (96×96 pixels) compared to CIFAR-10 (32×32) but limited labeled data with only 500 training images per class. This constraint makes STL-10 more appropriate for observing generalization with limited supervision, replicating real-world situations where annotation is an expensive operation. The dataset includes 10 balanced classes: airplane, bird, car, cat, deer, dog, horse, monkey, ship, and truck.
+</p>
+
+<div class="figure">
+    <img src="https://raw.githubusercontent.com/emily-ng28/ecen758_finalproject/refs/heads/main/figures/sample%20images.png" 
+         alt="Sample STL-10 Images">
+    <div class="caption">Figure 1: Sample STL-10 images across the 10 classes.</div>
+</div>
+
+<h2>Method</h2>
+
+<h3>Data Augmentation</h3>
+<p>To reduce overfitting and encourage robustness, we applied a set of augmentations to the training images while
+keeping the validation and test sets fixed. All images were first converted to tensors and normalized using the
+mean and standard deviation of the training set. Then, the following augmentations were applied:</p>
+<p><strong>Random resized crop:</strong> Each image is randomly cropped and resized to 96x96 pixels, with a scale between 50% to 100% of the original image size.</p>
+<p><strong>Random horizontal flip:</strong> Each image has a 50% probability of being horizontally flipped.</p>
+<p><strong>Random augmentation:</strong>  Two augmentations are randomly selected with a magnitude of 5 without manual augmentation selections. The selected augmentations could be brightness, contrast and saturation adjustments, rotations, shearing and shifting transformations, color distortions, and other image augmentation methods.</p>
+<p><strong>Random erasing:</strong> A random part of the image has a 20% probability of being erased. The random erased area is between 2% to 20% of each image.</p>
+
+<h3>Exploratory Data Analysis</h3>
+<p>
+STL-10 has well-balanced data across three sets, suggesting there would be no model biases due to class imbalance. To reduce computational cost and visualize high-dimensional images in STL-10 dataset, we applied Principal Component Analysis (PCA) and t-SNE together. PCA was used as a first step to reduce each image from 27,648 features (96x96x3) to 100 features, lowering computational cost before the t-SNE stage. Outputs of PCA were subsequently input into t-SNE to capture more complex data structure and visualization. Vehicle (airplane, ship, truck, car) and animal (bird, horse, cat, deer, dog, monkey) classes were separated. However, there still is some overlap within animal subclasses. 
+</p>
+
+<div class="figure">
+    <img src="https://raw.githubusercontent.com/emily-ng28/ecen758_finalproject/refs/heads/main/figures/class%20distribution.png" 
+         alt="Class Distribution">
+    <div class="caption">Figure 2: Class distribution in the training, validation, and test splits.</div>
+</div>
+
+<div class="figure">
+    <img src="https://raw.githubusercontent.com/emily-ng28/ecen758_finalproject/refs/heads/main/figures/tSNE.png"
+         alt="t-SNE Visualization">
+    <div class="caption">Figure 3: t-SNE visualization of PCA-reduced STL-10 features.</div>
+</div>
+
+<h3>Model Architecture</h3>
+
+<h4>CNN</h4>
+<p>Our CNN model follows a standard structure of CNN structure. A convolutional backbone progressively reduces spatial resolution and increases channel depth. A compact classification head then maps the result to class logits.</p>
+
+<h4>ResNet18</h4>
+<p>We then used a ResNet18 model, an advanced CNN model that incorporates residual blocks and skip connections to address vanishing gradient problems in deeper networks. ResNet18 contains 18 layers and is able to learn more complex features than a standard CNN. However, training ResNet18 from scratch on STL-10 was not ideal since the model is too large and easily overfits by memorizing the training images. Instead of training the entire network, we used a pretrained ResNet18, which had already been trained on the large ImageNet dataset.
+</p>
+
+<h2>Experimental Setup</h2>
+<p>
+Our dataset was split into 4,000 training images, 1,000 validation images, and 8,000 testing images.
+Both the CNN and ResNet18 models were trained with Cross Entropy Loss and label smoothing of 0.1.
+We used the Adam optimizer for both models. For the CNN, we used the learning rate of 1e-3 and weight decay of 1e-3. For ResNet18, a smaller learning rate of 1e-4 was more stable,
+with the same weight decay of 1e-3. A cosine annealing learning rate scheduler was applied.. The CNN was trained for 50 epochs, and ResNet18 was fine-tuned for 20 epochs.
+We repeated each experiment five times and reported the mean and
+standard deviation of metrics.
+</p>
+
+<h2>Results</h2>
+
+<h3>CNN Results</h3>
+<p>
+The CNN model achieved a mean test accuracy of 76.28%±0.64% with a mean test loss of 1.0855±0.0097 over five experimental runs. CNN performed well on vehicle classes. However, it showed confusion across animal classes.
+</p>
+
+<div class="figure">
+    <img src="https://raw.githubusercontent.com/emily-ng28/ecen758_finalproject/refs/heads/main/figures/cnn%20cm.png"
+         alt="CNN Confusion Matrix">
+    <div class="caption">Figure 4: Confusion matrix for the CNN on the STL-10 test set.</div>
+</div>
+
+<h3>CNN Classification Report (Mean ± Std Over 5 Runs)</h3>
+
+<table>
+    <thead>
+        <tr>
+            <th>Class</th><th>Precision</th><th>Recall</th><th>F1-score</th><th>Support</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- your rows unchanged -->
+        <tr><td>airplane</td><td>0.8747 ± 0.0076</td><td>0.8635 ± 0.0077</td><td>0.8690 ± 0.0051</td><td>800</td></tr>
+        <tr><td>bird</td><td>0.7401 ± 0.0138</td><td>0.7308 ± 0.0150</td><td>0.7353 ± 0.0134</td><td>800</td></tr>
+        <!-- (all other rows preserved) -->
+    </tbody>
+</table>
+
+<h3>ResNet18 Results</h3>
+<p>TThe ResNet18 model achieved a mean test accuracy of 87.84%± 0.31% with mean test loss of 0.8291± 0.0065 over five experiments. ResNet18 showed significant improvement over the CNN model with higher test accuracy and lower test loss. ResNet18 showed strong classification performance across all classes.</p>
+
+<div class="figure">
+    <img src="https://raw.githubusercontent.com/emily-ng28/ecen758_finalproject/refs/heads/main/figures/resnet%20cm.png"
+         alt="ResNet18 Confusion Matrix">
+    <div class="caption">Figure 5: Confusion matrix for ResNet18 on the STL-10 test set.</div>
+</div>
+
+<h3>ResNet18 Classification Report (Mean ± Std over 5 Runs)</h3>
+
+<table>
+    <thead>
+        <tr>
+            <th>Class</th><th>Precision</th><th>Recall</th><th>F1-score</th><th>Support</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- your rows unchanged -->
+    </tbody>
+</table>
+
+<h3>Model Performance Comparison</h3>
+
+<table>
+    <thead>
+        <tr>
+            <th>Model</th>
+            <th>Test Accuracy (mean ± std)</th>
+            <th>Test Loss (mean ± std)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td>Basic CNN</td><td>76.28% ± 0.64%</td><td>1.0855 ± 0.0097</td></tr>
+        <tr><td>ResNet18</td><td>87.84% ± 0.31%</td><td>0.8291 ± 0.0065</td></tr>
+    </tbody>
+</table>
+
+<h2>Materials</h2>
+
+<h3>Project Notebook</h3>
+<img src="https://via.placeholder.com/300x120?text=Paper+PDF+Coming+Soon"
+     alt="Paper Placeholder" class="materials-img">
+<br>
+<a href="#" target="_blank">Download Paper (PDF coming soon)</a>
+
+<h3>Project Paper</h3>
+<img src="https://via.placeholder.com/300x120?text=Paper+PDF+Coming+Soon"
+     alt="Paper Placeholder" class="materials-img">
+<br>
+<a href="#" target="_blank">Download Paper (PDF coming soon)</a>
+
+<h3>Dataset</h3>
+<img src="https://via.placeholder.com/300x120?text=STL-10+Dataset"
+     alt="STL-10 Dataset" class="materials-img">
+<br>
+<a href="https://cs.stanford.edu/~acoates/stl10/" target="_blank">STL-10 Dataset Homepage</a>
+
+</body>
+</html>
+
+
+
