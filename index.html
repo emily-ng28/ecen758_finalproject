@@ -20,30 +20,30 @@
         h1 {
             text-align: center;
             color: #000080;
-            font-size: 50px;
-            font-weight: 700;
+            font-size: 45px;
+            font-weight: 800;
             margin-top: 0px;
             margin-bottom: 20px;
         }
 
         h2 {
-            font-size: 35px;
+            font-size: 40px;
             color: #000080;
-            font-weight: 600;
+            font-weight: 700;
             margin-top: 55px;
             margin-bottom: 18px;
         }
 
         h3 {
-            font-size: 28px;
+            font-size: 33px;
             font-weight: 600;
             margin-top: 40px;
             margin-bottom: 14px;
         }
 
         h4 {
-            font-size: 20px;
-            font-weight: 600;
+            font-size: 26px;
+            font-weight: 500;
             margin-top: 28px;
             margin-bottom: 10px;
         }
@@ -57,7 +57,7 @@
 
         p {
             text-align: justify;
-            font-size: 16px;
+            font-size: 18px;
             margin-bottom: 18px;
         }
 
@@ -138,10 +138,10 @@ The STL-10 dataset represents a difficult challenge that deals with higher resol
 <p>To reduce overfitting and encourage robustness, we applied a set of augmentations to the training images while
 keeping the validation and test sets fixed. All images were first converted to tensors and normalized using the
 mean and standard deviation of the training set. Then, the following augmentations were applied:</p>
-<p><strong>Random resized crop:</strong> Each image is randomly cropped and resized to 96x96 pixels, with a scale between 50% to 100% of the original image size.</p>
-<p><strong>Random horizontal flip:</strong> Each image has a 50% probability of being horizontally flipped.</p>
-<p><strong>Random augmentation:</strong>  Two augmentations are randomly selected with a magnitude of 5 without manual augmentation selections. The selected augmentations could be brightness, contrast and saturation adjustments, rotations, shearing and shifting transformations, color distortions, and other image augmentation methods.</p>
-<p><strong>Random erasing:</strong> A random part of the image has a 20% probability of being erased. The random erased area is between 2% to 20% of each image.</p>
+<p><em>Random resized crop:</em> Each image is randomly cropped and resized to 96x96 pixels, with a scale between 50% to 100% of the original image size.</p>
+<p><em>Random horizontal flip:</em> Each image has a 50% probability of being horizontally flipped.</p>
+<p><em>Random augmentation:</em>  Two augmentations are randomly selected with a magnitude of 5 without manual augmentation selections. The selected augmentations could be brightness, contrast and saturation adjustments, rotations, shearing and shifting transformations, color distortions, and other image augmentation methods.</p>
+<p><em>Random erasing:</em> A random part of the image has a 20% probability of being erased. The random erased area is between 2% to 20% of each image.</p>
 
 <h3>Exploratory Data Analysis</h3>
 <p>
@@ -174,7 +174,7 @@ STL-10 has well-balanced data across three sets, suggesting there would be no mo
 Our dataset was split into 4,000 training images, 1,000 validation images, and 8,000 testing images.
 Both the CNN and ResNet18 models were trained with Cross Entropy Loss and label smoothing of 0.1.
 We used the Adam optimizer for both models. For the CNN, we used the learning rate of 1e-3 and weight decay of 1e-3. For ResNet18, a smaller learning rate of 1e-4 was more stable,
-with the same weight decay of 1e-3. A cosine annealing learning rate scheduler was applied.. The CNN was trained for 50 epochs, and ResNet18 was fine-tuned for 20 epochs.
+with the same weight decay of 1e-3. A cosine annealing learning rate scheduler was applied. The CNN was trained for 50 epochs, and ResNet18 was fine-tuned for 20 epochs.
 We repeated each experiment five times and reported the mean and
 standard deviation of metrics.
 </p>
